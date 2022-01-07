@@ -1,0 +1,120 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'com.apollographql.apollo' version '2.5.11'
+    id 'kotlin-kapt'
+}
+
+android {
+    compileSdk 31
+
+    defaultConfig {
+        applicationId "com.artists"
+        minSdk 21
+        targetSdk 31
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary true
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+        useIR = true
+    }
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion compose_version
+        kotlinCompilerVersion '1.5.21'
+    }
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
+}
+
+apollo {
+    generateKotlinModels.set(true)
+}
+
+dependencies {
+
+    implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'androidx.appcompat:appcompat:1.4.0'
+    implementation 'com.google.android.material:material:1.4.0'
+    implementation "androidx.compose.ui:ui:$compose_version"
+    implementation "androidx.compose.material:material:$compose_version"
+    implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.0'
+    implementation 'androidx.activity:activity-compose:1.4.0'
+    implementation "androidx.compose.ui:ui-util:$compose_version"
+    implementation "com.google.accompanist:accompanist-insets:0.22.0-rc"
+
+    implementation 'io.coil-kt:coil-compose:1.4.0'
+
+    //paging 3
+    def paging_version = "3.1.0"
+    implementation "androidx.paging:paging-runtime-ktx:$paging_version"
+    testImplementation "androidx.paging:paging-common-ktx:$paging_version"
+    implementation "androidx.paging:paging-rxjava3:$paging_version"
+    implementation "androidx.paging:paging-compose:1.0.0-alpha14"
+
+
+    implementation "androidx.lifecycle:lifecycle-reactivestreams-ktx:2.4.0"
+    implementation("androidx.compose.runtime:runtime-livedata:1.0.5")
+    implementation("androidx.compose.runtime:runtime-rxjava3:1.0.5")
+
+    //Navigation
+    def nav_version = "2.4.0-rc01"
+    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-compose:2.4.0-rc01"
+
+    implementation "io.reactivex.rxjava3:rxjava:3.1.3"
+    implementation "com.squareup.okhttp3:logging-interceptor:4.9.3"
+
+    //DI
+    implementation "io.insert-koin:koin-android:3.1.4"
+    implementation "io.insert-koin:koin-androidx-compose:3.1.4"
+
+    //Apollo GraphQL
+    implementation("com.apollographql.apollo:apollo-runtime:2.5.11")
+    implementation "com.apollographql.apollo:apollo-rx3-support:2.5.11"
+
+    //Room
+    def room_version = "2.4.0"
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
+
+    // optional - RxJava3 support for Room
+    implementation "androidx.room:room-rxjava3:$room_version"
+
+    // optional - Paging 3 Integration
+    implementation "androidx.room:room-paging:2.4.0"
+
+
+    //test
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
+    debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
+
+}

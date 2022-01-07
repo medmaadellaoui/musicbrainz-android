@@ -1,0 +1,18 @@
+query GetArtists($size: Int!, $start: String) {
+    search {
+        artists(query: "*", first: $size, after: $start) {
+            edges {
+                cursor
+            }
+            nodes {
+                id
+                name
+                fanArt {
+                    thumbnails{
+                        url
+                    }
+                }
+            }
+        }
+    }
+}

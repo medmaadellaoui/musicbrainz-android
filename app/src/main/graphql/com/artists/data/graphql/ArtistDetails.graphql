@@ -1,0 +1,31 @@
+query GetArtistDetail($id: ID!) {
+    node(id: $id) {
+        ...ArtistDetailsFragment
+    }
+}
+
+fragment ArtistDetailsFragment on Artist {
+    id
+    name
+    disambiguation
+
+    recordings {
+        nodes {
+            title
+            lastFM {
+                url
+            }
+        }
+    }
+
+    rating {
+        value
+        voteCount
+    }
+
+    fanArt {
+        thumbnails{
+            url
+        }
+    }
+}
