@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.artists.ui.component.ArtistList
+import com.artists.ui.navigation.Tab
 import org.koin.androidx.compose.getViewModel
 
 /**
@@ -20,6 +21,6 @@ fun FavoriteListScreen(
 
     val favorites = viewModel.getFavorites().collectAsLazyPagingItems()
     ArtistList(artists = favorites, onArtistClick = {
-        // navController.navigate()
+        navController.navigate("${Tab.ArtistDetails.route}/$it")
     })
 }

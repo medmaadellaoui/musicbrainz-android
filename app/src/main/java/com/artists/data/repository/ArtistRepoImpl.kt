@@ -9,7 +9,9 @@ import com.artists.data.database.FavArtistDao
 import com.artists.data.graphql.GetArtistDetailQuery
 import com.artists.data.model.Artist
 import com.artists.data.remote.RemotePagingSource
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.core.SingleTransformer
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.flow.Flow
 
@@ -18,6 +20,13 @@ class ArtistRepoImpl(
     private val favoriteDao: FavArtistDao,
     private val apolloClient: ApolloClient
 ) : ArtistRepo {
+
+    fun <M: Any> bindSchedulers(): SingleTransformer<M, M> {
+        return SingleTransformer<M, M> { upstream ->
+            upstream.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+        }
+    }
 
     override fun loadAll(): Flow<PagingData<Artist>> {
         return Pager(
@@ -45,7 +54,7 @@ class ArtistRepoImpl(
         val query = apolloClient.query(GetArtistDetailQuery(id))
         return Rx3Apollo.from(query)
             .firstOrError()
-            .subscribeOn(Schedulers.io())
+            .compose(bindSchedulers())
             .map { response ->
                 response.data?.node?.fragments?.artistDetailsFragment?.let {
                     Artist(
@@ -59,5 +68,23 @@ class ArtistRepoImpl(
                     }
                 } ?: throw Exception("error getting data from remote response")
             }
+    }
+
+    override fun saveFavorite(artist: Artist): Single<Boolean> {
+        return favoriteDao.insert(artist)
+            .compose(bindSchedulers())
+            .map { it > 0 }
+    }
+
+    override fun exists(id: String): Single<Boolean> {
+        return favoriteDao.count(id)
+            .map { it > 0}
+            .compose(bindSchedulers())
+    }
+
+    override fun deleteFavorite(artist: Artist): Single<Boolean> {
+        return favoriteDao.delete(artist)
+            .flatMap { exists(artist.id) }
+            .compose(bindSchedulers())
     }
 }

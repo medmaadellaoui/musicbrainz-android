@@ -1,5 +1,6 @@
 package com.artists.ui.favorite
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -13,9 +14,12 @@ import kotlinx.coroutines.flow.Flow
  */
 class FavoriteViewModel(private val repository: ArtistRepo) : ViewModel() {
 
-    fun getFavorites() : Flow<PagingData<Artist>> {
-        return repository.getFavorites()
+    private var flow: Flow<PagingData<Artist>>? = null
+
+    fun getFavorites(): Flow<PagingData<Artist>> {
+        return flow ?: repository.getFavorites()
             .cachedIn(viewModelScope)
+            .also { flow = it }
     }
 
 }

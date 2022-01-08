@@ -9,8 +9,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material.icons.rounded.FavoriteBorder
+import androidx.compose.material.icons.sharp.Favorite
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,6 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.artists.R
+import com.artists.data.model.Artist
 import com.artists.ui.component.ArtistImage
 import com.artists.ui.component.createPainter
 import org.koin.androidx.compose.getViewModel
@@ -37,6 +40,7 @@ import org.koin.androidx.compose.getViewModel
 fun ArtistDetailsScreen(id: String, viewModel: DetailsViewModel = getViewModel()) {
 
     val artist by viewModel.getArtistDetails(id).observeAsState()
+
     artist?.let {
         Box(
             modifier = Modifier
@@ -66,42 +70,7 @@ fun ArtistDetailsScreen(id: String, viewModel: DetailsViewModel = getViewModel()
                 contentPadding = PaddingValues(16.dp)
             ) {
                 item {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-
-                        ArtistImage(
-                            imageUrl = it.imageUrl ?: "",
-                            contentDescription = it.name,
-                            modifier = Modifier
-                                .size(250.dp)
-                                .padding(32.dp)
-                        )
-
-                        Row(
-                            Modifier.fillMaxWidth()
-                                .padding(8.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = it.name,
-                                maxLines = 2,
-                                overflow = TextOverflow.Ellipsis,
-                                style = MaterialTheme.typography.h4,
-                                textAlign = TextAlign.Center,
-                                color = MaterialTheme.colors.primary,
-                                modifier = Modifier
-                                    .wrapContentSize()
-                            )
-
-                            Spacer(Modifier.size(16.dp))
-
-                            FloatingActionButton(contentColor = MaterialTheme.colors.onPrimary, onClick = { }) {
-                                Icon(Icons.Default.Favorite, "")
-                            }
-                        }
-                        Spacer(Modifier.size(16.dp))
-                    }
+                    DetailsHeader(it, artist, viewModel)
                 }
 
                 items(it.recordings) { recording ->
@@ -132,5 +101,82 @@ fun ArtistDetailsScreen(id: String, viewModel: DetailsViewModel = getViewModel()
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun DetailsHeader(
+    it: Artist,
+    artist: Artist?,
+    viewModel: DetailsViewModel
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        ArtistImage(
+            imageUrl = it.imageUrl ?: "",
+            contentDescription = it.name,
+            modifier = Modifier
+                .size(250.dp)
+                .padding(32.dp)
+        )
+
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = it.name,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.h4,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colors.primary,
+                modifier = Modifier
+                    .wrapContentSize()
+            )
+
+            Spacer(Modifier.size(16.dp))
+            FavoriteBtn(artist, viewModel, it)
+        }
+        Spacer(Modifier.size(16.dp))
+    }
+}
+
+@Composable
+private fun FavoriteBtn(
+    artist: Artist?,
+    viewModel: DetailsViewModel,
+    it: Artist
+) {
+    val isFavorite : Boolean? by artist?.let {
+        viewModel.isFavorite(it).observeAsState(false)
+    } ?: remember {
+        mutableStateOf(false)
+    }
+
+    FloatingActionButton(
+        contentColor = MaterialTheme.colors.onPrimary,
+        backgroundColor = when (isFavorite) {
+            false, true -> MaterialTheme.colors.secondaryVariant
+            else -> MaterialTheme.colors.error
+        },
+        onClick = {
+            if (isFavorite == true)
+                viewModel.removeFavorite(it)
+            else
+                viewModel.saveAsFavorite(it)
+        }
+    ) {
+        Icon(
+            when (isFavorite) {
+                null, false -> Icons.Rounded.FavoriteBorder
+                else -> Icons.Filled.Favorite
+            },
+            "favorite icon"
+        )
     }
 }
