@@ -14,9 +14,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
+import androidx.paging.CombinedLoadStates
+import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.artists.ui.component.ArtistList
 import com.artists.ui.navigation.Tab
+import kotlinx.coroutines.flow.collect
 import org.koin.androidx.compose.getViewModel
 
 /**
@@ -27,6 +30,7 @@ import org.koin.androidx.compose.getViewModel
 @Composable
 fun ArtistListScreen(navController: NavController, viewModel: ArtistsViewModel = getViewModel()) {
     val artists = viewModel.getArtists().collectAsLazyPagingItems()
+
     ArtistList(artists) { artistId ->
         navController.navigate("${Tab.ArtistDetails.route}/$artistId")
     }

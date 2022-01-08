@@ -16,6 +16,7 @@ import androidx.navigation.navArgument
 import com.artists.ui.artists.ArtistListScreen
 import com.artists.ui.details.ArtistDetailsScreen
 import com.artists.ui.favorite.FavoriteListScreen
+import com.artists.ui.splash.SplashScreen
 
 /**
  * Created by Mohammed MAADELLAOUI on 07/01/2022.
@@ -25,7 +26,8 @@ import com.artists.ui.favorite.FavoriteListScreen
 @ExperimentalFoundationApi
 @Composable
 fun MainNavHost(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = Tab.Artists.route) {
+    NavHost(navController = navController, startDestination = Tab.Splash.route) {
+        composable(Tab.Splash.route, ) { SplashScreen(navController) }
         composable(Tab.Artists.route) { ArtistListScreen(navController) }
         composable(Tab.Favorite.route) { FavoriteListScreen(navController) }
         composable(

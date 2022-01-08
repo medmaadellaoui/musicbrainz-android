@@ -42,61 +42,89 @@ fun ArtistDetailsScreen(id: String, viewModel: DetailsViewModel = getViewModel()
     val artist by viewModel.getArtistDetails(id).observeAsState()
 
     artist?.let {
-        Box(
+        ArtistDetails(it, artist, viewModel)
+    } ?: Loading()
+}
+
+@Composable
+private fun Loading() {
+    Box(
+        Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+
+        CircularProgressIndicator(
+            Modifier
+                .padding(16.dp)
+                .wrapContentSize()
+                .size(48.dp),
+            color = MaterialTheme.colors.secondaryVariant,
+            strokeWidth = 8.dp,
+        )
+    }
+}
+
+@Composable
+private fun ArtistDetails(
+    it: Artist,
+    artist: Artist?,
+    viewModel: DetailsViewModel
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+
+        Image(
             modifier = Modifier
                 .fillMaxSize()
+                .alpha(0.5f),
+            painter = createPainter(it.imageUrl ?: "", blurred = true),
+            contentDescription = "",
+            contentScale = ContentScale.Crop
+        )
+
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.linearGradient(
+                        listOf(Color.Transparent, MaterialTheme.colors.background),
+                        Offset(0f, 0f),
+                        Offset(0f, 900f),
+                        TileMode.Clamp
+                    )
+                ),
+            contentPadding = PaddingValues(16.dp)
         ) {
+            item {
+                DetailsHeader(it, artist, viewModel)
+            }
 
-            Image(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .alpha(0.5f),
-                painter = createPainter(it.imageUrl ?: "", blurred = true),
-                contentDescription = "",
-                contentScale = ContentScale.Crop
-            )
-
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        brush = Brush.linearGradient(
-                            listOf(Color.Transparent, MaterialTheme.colors.background),
-                            Offset(0f, 0f),
-                            Offset(0f, 900f),
-                            TileMode.Clamp
+            items(it.recordings) { recording ->
+                Card(
+                    Modifier.padding(4.dp),
+                    backgroundColor = MaterialTheme.colors.surface,
+                    shape = RoundedCornerShape(32.dp),
+                    elevation = 4.dp
+                ) {
+                    Row(Modifier.padding(16.dp)) {
+                        Icon(
+                            painterResource(R.drawable.ic_baseline_album_24),
+                            "",
+                            tint = Color.LightGray
                         )
-                    ),
-                contentPadding = PaddingValues(16.dp)
-            ) {
-                item {
-                    DetailsHeader(it, artist, viewModel)
-                }
 
-                items(it.recordings) { recording ->
-                    Card(
-                        Modifier.padding(4.dp),
-                        backgroundColor = MaterialTheme.colors.surface,
-                        shape = RoundedCornerShape(32.dp),
-                        elevation = 4.dp
-                    ) {
-                        Row(Modifier.padding(16.dp)) {
-                            Icon(
-                                painterResource(R.drawable.ic_baseline_album_24),
-                                "",
-                                tint = Color.LightGray
-                            )
+                        Spacer(Modifier.size(16.dp))
 
-                            Spacer(Modifier.size(16.dp))
-
-                            Text(
-                                recording, overflow = TextOverflow.Ellipsis,
-                                style = MaterialTheme.typography.body1,
-                                color = MaterialTheme.colors.primary,
-                                maxLines = 1,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                        }
+                        Text(
+                            recording, overflow = TextOverflow.Ellipsis,
+                            style = MaterialTheme.typography.body1,
+                            color = MaterialTheme.colors.primary,
+                            maxLines = 1,
+                            modifier = Modifier.fillMaxWidth()
+                        )
                     }
                 }
             }

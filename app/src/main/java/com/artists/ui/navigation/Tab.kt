@@ -14,8 +14,7 @@ sealed class Tab(
     val icon: ImageVector,
     val route: String
 ) {
-    object SplashScreen : Tab("Splash Screen", Icons.Filled.Star, "splash_screen")
-    object Home : Tab("Home", Icons.Filled.Star, "home")
+    object Splash: Tab("Splash Screen", Icons.Filled.Star, "splash_screen")
     object Artists : Tab("Artists", Icons.Filled.Home, "artists")
     object Favorite : Tab("Favorite", Icons.Filled.Favorite, "favorite")
     object ArtistDetails : Tab("Artist Details", Icons.Filled.Star, "artist")
